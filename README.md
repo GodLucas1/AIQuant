@@ -71,6 +71,7 @@ pip install -r requirements.txt
 ```
 # 数据库配置
 DATABASE_URI=postgresql://username:password@localhost:5432/aiquant
+TEST_DATABASE_URI=postgresql://username:password@localhost:5432/aiquant_test
 
 # JWT配置
 JWT_SECRET_KEY=your_super_secret_key_change_in_production
@@ -81,8 +82,16 @@ FLASK_APP=run.py
 FLASK_ENV=development
 FLASK_DEBUG=True
 
+# 安全配置
+SECRET_KEY=dev_secret_key_change_in_production
+WTF_CSRF_SECRET_KEY=csrf_dev_secret_key_change_in_production
+
 # 其他配置
 TIMEZONE=Asia/Shanghai
+
+# 日志配置
+LOG_LEVEL=DEBUG
+LOG_FILE_PATH=logs/aiquant.log
 ```
 
 5. **初始化数据库**
@@ -113,6 +122,41 @@ python run.py
 pip install gunicorn
 gunicorn -w 4 -b 127.0.0.1:5000 "app:create_app()"
 ```
+
+## 配置管理
+
+### 配置项说明
+
+#### 数据库配置
+- `DATABASE_URI`: 主数据库连接URI
+- `TEST_DATABASE_URI`: 测试数据库连接URI
+
+#### JWT配置
+- `JWT_SECRET_KEY`: JWT签名密钥
+- `JWT_ACCESS_TOKEN_EXPIRES`: 访问令牌过期时间（秒）
+
+#### 安全配置
+- `SECRET_KEY`: Flask应用密钥
+- `WTF_CSRF_SECRET_KEY`: CSRF保护密钥
+
+#### 日志配置
+- `LOG_LEVEL`: 日志级别（DEBUG, INFO, WARNING, ERROR, CRITICAL）
+- `LOG_FILE_PATH`: 日志文件路径
+
+### 配置最佳实践
+
+1. **敏感信息保护**：
+   - 不要在代码中硬编码敏感信息
+   - 生产环境使用环境变量或安全的密钥管理服务
+   - 确保 `.env` 文件不被提交到版本控制系统
+
+2. **环境隔离**：
+   - 为不同环境（开发、测试、生产）使用不同的配置
+   - 测试环境应使用独立的数据库
+
+3. **配置验证**：
+   - 应用启动时验证关键配置是否存在
+   - 为必要的配置提供合理的默认值
 
 ## API接口文档
 
