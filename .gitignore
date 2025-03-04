@@ -1,0 +1,67 @@
+# Python虚拟环境
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 日志文件
+logs/
+*.log
+
+# 环境变量和敏感配置
+.env
+.env.*
+!.env.example
+
+# 数据库文件
+*.db
+*.sqlite3
+
+# IDE相关文件
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# 临时文件
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.coverage.*
+
+# 缓存文件
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# 数据文件
+*.csv
+*.dat
+*.pkl
+*.npy
+*.h5
+
+# 其他
+.ipynb_checkpoints
