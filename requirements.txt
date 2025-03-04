@@ -4,7 +4,6 @@ flask-migrate==4.0.4
 flask-jwt-extended==4.5.2
 pandas==2.0.3
 numpy==1.24.3
-ta-lib==0.4.28
 requests==2.31.0
 pytz==2023.3
 APScheduler==3.10.1
@@ -14,3 +13,4 @@ psycopg2-binary==2.9.7
 python-dotenv==1.0.0
 backtrader==1.9.78.123
 yfinance==0.2.28
+pymysql==1.1.1

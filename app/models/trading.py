@@ -1,10 +1,11 @@
-from app.models import db
+from app import db
 from datetime import datetime
+
 
 class TradingAccount(db.Model):
     """交易账户模型"""
     __tablename__ = 'trading_accounts'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     account_type = db.Column(db.String(32), nullable=False)  # 账户类型：股票、期货、期权等
@@ -18,12 +19,12 @@ class TradingAccount(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
     # 关联关系
     orders = db.relationship('TradeOrder', backref='account', lazy='dynamic')
     positions = db.relationship('TradePosition', backref='account', lazy='dynamic')
     trading_tasks = db.relationship('TradingTask', backref='account', lazy='dynamic')
-    
+
     def __repr__(self):
         return f'<TradingAccount {self.name} {self.account_number}>'
 
@@ -31,7 +32,7 @@ class TradingAccount(db.Model):
 class TradingTask(db.Model):
     """交易任务模型，用于自动化交易"""
     __tablename__ = 'trading_tasks'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     description = db.Column(db.Text)
@@ -46,7 +47,7 @@ class TradingTask(db.Model):
     last_run = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
     def __repr__(self):
         return f'<TradingTask {self.name} {self.status}>'
 
@@ -54,7 +55,7 @@ class TradingTask(db.Model):
 class TradeOrder(db.Model):
     """交易订单模型"""
     __tablename__ = 'trade_orders'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('trading_accounts.id'), nullable=False)
     task_id = db.Column(db.Integer, db.ForeignKey('trading_tasks.id'))  # 可以为空，表示手动下单
@@ -74,10 +75,10 @@ class TradeOrder(db.Model):
     external_order_id = db.Column(db.String(64))  # 外部订单ID（券商系统）
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
     # 关联关系
     task = db.relationship('TradingTask', backref='orders', lazy=True, foreign_keys=[task_id])
-    
+
     def __repr__(self):
         return f'<TradeOrder {self.symbol} {self.side} {self.quantity} @ {self.price} {self.status}>'
 
@@ -85,7 +86,7 @@ class TradeOrder(db.Model):
 class TradePosition(db.Model):
     """交易持仓模型"""
     __tablename__ = 'trade_positions'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('trading_accounts.id'), nullable=False)
     symbol = db.Column(db.String(32), nullable=False)
@@ -99,8 +100,8 @@ class TradePosition(db.Model):
     last_update = db.Column(db.DateTime, default=datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
     __table_args__ = (db.UniqueConstraint('account_id', 'symbol', name='uix_position'),)
-    
+
     def __repr__(self):
         return f'<TradePosition {self.symbol} {self.quantity} @ {self.average_cost}>'
