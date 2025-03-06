@@ -15,6 +15,7 @@ class DataSource(db.Model):
     
     # 关联关系
     stock_data = db.relationship('StockData', backref='source', lazy='dynamic')
+    futures_data = db.relationship('FuturesData', backref='source', lazy='dynamic')
     
     def __repr__(self):
         return f'<DataSource {self.name}>'
@@ -41,6 +42,31 @@ class StockData(db.Model):
     def __repr__(self):
         return f'<StockData {self.symbol}>'
 
+class FuturesData(db.Model):
+    """期货数据模型"""
+    __tablename__ = 'futures_data'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    symbol = db.Column(db.String(32), unique=True, nullable=False, index=True)
+    name = db.Column(db.String(128))
+    exchange = db.Column(db.String(32))
+    category = db.Column(db.String(64))  # 商品类别：如农产品、金属、能源等
+    contract_size = db.Column(db.Float)  # 合约规模
+    price_tick = db.Column(db.Float)  # 最小变动价位
+    margin_rate = db.Column(db.Float)  # 保证金率
+    delivery_date = db.Column(db.DateTime)  # 交割日期
+    last_price = db.Column(db.Float)
+    last_update = db.Column(db.DateTime)
+    source_id = db.Column(db.Integer, db.ForeignKey('data_sources.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # 关联关系
+    price_data = db.relationship('FuturesPriceData', backref='futures', lazy='dynamic')
+    
+    def __repr__(self):
+        return f'<FuturesData {self.symbol}>'
+
 class PriceData(db.Model):
     """价格数据模型"""
     __tablename__ = 'price_data'
@@ -60,3 +86,24 @@ class PriceData(db.Model):
     
     def __repr__(self):
         return f'<PriceData {self.stock.symbol} {self.timestamp} {self.interval}>'
+
+class FuturesPriceData(db.Model):
+    """期货价格数据模型"""
+    __tablename__ = 'futures_price_data'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    futures_id = db.Column(db.Integer, db.ForeignKey('futures_data.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
+    open_price = db.Column(db.Float)
+    high_price = db.Column(db.Float)
+    low_price = db.Column(db.Float)
+    close_price = db.Column(db.Float)
+    volume = db.Column(db.BigInteger)
+    open_interest = db.Column(db.BigInteger)  # 持仓量
+    interval = db.Column(db.String(8))  # 1m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (db.UniqueConstraint('futures_id', 'timestamp', 'interval', name='uix_futures_price_data'),)
+    
+    def __repr__(self):
+        return f'<FuturesPriceData {self.futures.symbol} {self.timestamp} {self.interval}>'
