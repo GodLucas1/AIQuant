@@ -1,10 +1,11 @@
 from datetime import datetime
 from app import db
 
+
 class Strategy(db.Model):
     """交易策略模型"""
     __tablename__ = 'strategies'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     description = db.Column(db.Text)
@@ -15,18 +16,19 @@ class Strategy(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
     # 关联关系
     backtests = db.relationship('Backtest', backref='strategy', lazy='dynamic')
     trading_tasks = db.relationship('TradingTask', backref='strategy', lazy='dynamic')
-    
+
     def __repr__(self):
         return f'<Strategy {self.name}>'
+
 
 class StrategyTemplate(db.Model):
     """策略模板模型"""
     __tablename__ = 'strategy_templates'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     description = db.Column(db.Text)
@@ -36,6 +38,6 @@ class StrategyTemplate(db.Model):
     difficulty = db.Column(db.String(16))  # 难度级别：初级、中级、高级
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
     def __repr__(self):
         return f'<StrategyTemplate {self.name}>'
